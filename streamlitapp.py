@@ -22,5 +22,5 @@ if upload_file is not None:
         if np.argmax(classes)==0:
             st.title(':green[NORMAL]')
         else:
-            st.title(':red[PNEUMONIA IS FOUND]')
+            st.title(':red[PNEUMONIA IS FOUND] , Get Well Soon')
         # st.write('Image Uploaded succesfully')
