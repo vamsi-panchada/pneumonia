@@ -20,7 +20,7 @@ if upload_file is not None:
         model = models.load_model('best_model.h5')
         classes = model.predict(x)
         if np.argmax(classes)==0:
-            st.title(':green[NORMAL]')
+            st.title(':green[NORMAL] , You are fine No need to Worry. 😊')
         else:
-            st.title(':red[PNEUMONIA IS FOUND] , Get Well Soon')
+            st.title(':red[PNEUMONIA IS FOUND] , Get Well Soon ✌🏻')
         # st.write('Image Uploaded succesfully')
