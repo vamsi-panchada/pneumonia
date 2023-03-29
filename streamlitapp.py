@@ -12,9 +12,9 @@ if upload_file is not None:
     print(upload_file)
     file_bytes = np.asarray(bytearray(upload_file.read()), dtype=np.uint8)
     im = cv2.imdecode(file_bytes, 1)
+    im = cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC)
     st.image(im, channels="BGR")
     if st.button('Predict'):
-        im = cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC)
         im = im.astype(np.float32)/255.
         x = np.array([im])
         model = models.load_model('best_model.h5')
