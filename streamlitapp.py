@@ -63,7 +63,8 @@ pmodel = models.load_model('best_model.h5')
 
 if uploadedFiles:
 #     ColumnArray = list(st.columns(len(uploadedFiles)))
-    
+    st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+
     for upload_file in uploadedFiles:
 
         # file_bytes = np.asarray(bytearray(upload_file.read()), dtype=np.uint8)
@@ -78,6 +79,7 @@ if uploadedFiles:
         containerArray.append(container)
         imageArray.append(im)
         betaColumnArray.append(col2)
+        st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
 
 
 if len(imageArray)>0:
