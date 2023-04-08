@@ -69,13 +69,15 @@ if uploadedFiles:
 
         # file_bytes = np.asarray(bytearray(upload_file.read()), dtype=np.uint8)
         # im = cv2.imdecode(file_bytes, 1)
-        file_bytes = np.asarray(bytearray(upload_file.read()), dtype=np.uint8)
+        uf = upload_file.read()
+        file_bytes = np.asarray(bytearray(uf), dtype=np.uint8)
         im = cv2.imdecode(file_bytes, 1)
         container = st.container()
         col1, mid, col2 = container.columns([10, 1, 20])
         with col1:
             # col1.image(cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC), channels="BGR")
              col1.image(im, channels="BGR")
+             col1.write(upload_file.name)
         containerArray.append(container)
         imageArray.append(im)
         betaColumnArray.append(col2)
