@@ -7,7 +7,7 @@ import getData
 from keras import layers, Model, backend
 channel_axis = -1# if backend.image_data_format() == 'channels_first' else -1
 def model():
-    img_input = layers.Input(shape = (224, 224, 1))
+    img_input = layers.Input(shape = (224, 224, 3))
     x = layers.Conv2D(32, (3,3),
                       padding = 'same', use_bias = False,
                       name = 'block1_conv1')(img_input)
