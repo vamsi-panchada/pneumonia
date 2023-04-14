@@ -1,10 +1,11 @@
 import streamlit as st
 import cv2
 import numpy as np
-from tensorflow.keras import models
+# from tensorflow.keras import models
+from tensorflow.keras.optimizers import Adam
 import getData
 
-from keras import layers, Model, backend
+from tensorflow.keras import layers, Model, backend
 channel_axis = -1# if backend.image_data_format() == 'channels_first' else -1
 def model():
     img_input = layers.Input(shape = (224, 224, 3))
@@ -96,10 +97,12 @@ def model():
     x = layers.Dense(2, activation='softmax', name='predictions')(x)
     model = Model(inputs=img_input, outputs=x, name = 'own_build_model')
     return model
+
 pmodel = model()
 # model.summary()
+
+
 LEARN_RATE = 1e-4
-from tensorflow.keras.optimizers import Adam
 pmodel.compile(optimizer = Adam(learning_rate = LEARN_RATE), loss = 'categorical_crossentropy',
                            metrics = ['categorical_accuracy'])
 
@@ -110,8 +113,8 @@ containerArray = []
 imageArray = []
 betaColumnArray = []
 
-
-file_id = '1laMCk4yPp-_l-yzJPYGMb-uQTf7sLio9'
+# https://drive.google.com/file/d/1CIGQLKWyqDn733vIleuZqijhbcVfZbBo/view?usp=sharing
+file_id = '1CIGQLKWyqDn733vIleuZqijhbcVfZbBo'
 destination = 'best_model.hdf5'
 getData.download_file_from_google_drive(file_id, destination)
 pmodel.load_weights('best_model.hdf5')
