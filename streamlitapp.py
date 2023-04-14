@@ -157,7 +157,7 @@ if len(imageArray)>0:
             im = cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC)
             im = im.astype(np.float32)/255.
             x = np.array([im])
-            model = models.load_model('best_model.h5')
+            # model = models.load_model('best_model.h5')
             # classes = model.predict(x)
             
             classes = pmodel.predict(x)
