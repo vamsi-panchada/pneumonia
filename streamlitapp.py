@@ -30,6 +30,7 @@ import streamlit as st
 import cv2
 import numpy as np
 from tensorflow.keras import models
+import getData
 
 st.title('Pneumonia Detection Application')
 st.text('Please Upload a Chest X-RAY Image to detect the Pneumonia.')
@@ -57,9 +58,17 @@ betaColumnArray = []
 #         # st.write('Image Uploaded succesfully')
 # =======
 
-uploadedFiles = st.file_uploader('Upload Chest X-Rays', accept_multiple_files=True)
+# https://drive.google.com/file/d/1aJIPjuH-988srKoJHCeBv3bBbfe6uWVi/view?usp=share_link
+
+file_id = '1aJIPjuH-988srKoJHCeBv3bBbfe6uWVi'
+destination = 'best_model.h5'
+getData.download_file_from_google_drive(file_id, destination)
 
 pmodel = models.load_model('best_model.h5')
+
+
+
+uploadedFiles = st.file_uploader('Upload Chest X-Rays', accept_multiple_files=True)
 
 if uploadedFiles:
 #     ColumnArray = list(st.columns(len(uploadedFiles)))
