@@ -1,12 +1,14 @@
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import layers, Model
 import streamlit as st
+import getData
 import cv2
 import numpy as np
-# from tensorflow.keras import models
-from tensorflow.keras.optimizers import Adam
-import getData
 
-from tensorflow.keras import layers, Model, backend
-channel_axis = -1# if backend.image_data_format() == 'channels_first' else -1
+channel_axis = -1
+LEARN_RATE = 1e-4
+
+@st.cache_resource
 def model():
     img_input = layers.Input(shape = (224, 224, 3))
     x = layers.Conv2D(32, (3,3),
@@ -96,28 +98,25 @@ def model():
     x = layers.Dense(64, activation='relu', name='fc6')(x)
     x = layers.Dense(2, activation='softmax', name='predictions')(x)
     model = Model(inputs=img_input, outputs=x, name = 'own_build_model')
+    model.compile(optimizer = Adam(learning_rate = LEARN_RATE), loss = 'categorical_crossentropy', metrics = ['categorical_accuracy'])
+    print('hitting point 1')
+    try:
+        model.load_weights('best_model.hdf5')
+    except:
+        file_id = '1CIGQLKWyqDn733vIleuZqijhbcVfZbBo'
+        destination = 'best_model.hdf5'
+        getData.download_file_from_google_drive(file_id, destination)
+        model.load_weights('best_model.hdf5')
+    print('hitting point 2')
     return model
 
 pmodel = model()
-# model.summary()
-
-
-LEARN_RATE = 1e-4
-pmodel.compile(optimizer = Adam(learning_rate = LEARN_RATE), loss = 'categorical_crossentropy',
-                           metrics = ['categorical_accuracy'])
 
 st.title('Pneumonia Detection Application')
 st.text('Please Upload a Chest X-RAY Image to detect the Pneumonia.')
 
-containerArray = []
 imageArray = []
 betaColumnArray = []
-
-# https://drive.google.com/file/d/1CIGQLKWyqDn733vIleuZqijhbcVfZbBo/view?usp=sharing
-file_id = '1CIGQLKWyqDn733vIleuZqijhbcVfZbBo'
-destination = 'best_model.hdf5'
-getData.download_file_from_google_drive(file_id, destination)
-pmodel.load_weights('best_model.hdf5')
 
 uploadedFiles = st.file_uploader('Upload Chest X-Rays', accept_multiple_files=True)
 
@@ -125,59 +124,28 @@ if uploadedFiles:
     st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
 
     for upload_file in uploadedFiles:
-
-        # file_bytes = np.asarray(bytearray(upload_file.read()), dtype=np.uint8)
-        # im = cv2.imdecode(file_bytes, 1)
         uf = upload_file.read()
         file_bytes = np.asarray(bytearray(uf), dtype=np.uint8)
         im = cv2.imdecode(file_bytes, 1)
-        container = st.container()
-        col1, mid, col2 = container.columns([10, 1, 20])
+        col1, mid, col2 = st.columns([10, 1, 20])
         with col1:
-            # col1.image(cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC), channels="BGR")
              col1.image(im, channels="BGR")
              col1.write(upload_file.name)
-        containerArray.append(container)
         imageArray.append(im)
         betaColumnArray.append(col2)
         st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
 
-
 if len(imageArray)>0:
     if st.button('Predict'):
-        i = 0
-        for container, im, col2 in zip(containerArray, imageArray, betaColumnArray):
-            # container.write(i)
-            # i+=1 
-            # im = cv2.resize(im, (512, 512))[:,:,0]
-            # im = im.reshape(1, 512, 512, 1)
-            # mask = model.predict(im).reshape(512, 512)
-            # im = im.reshape(512, 512)
-            # im[mask==0]=0
-            # im = cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC).reshape(1, 224, 224, 1)
-            # im = im.astype(np.float32)/255.
-
+        for im, col2 in zip(imageArray, betaColumnArray):
             im = cv2.resize(im, (224, 224), interpolation=cv2.INTER_CUBIC)
             im = im.astype(np.float32)/255.
             x = np.array([im])
-            # model = models.load_model('best_model.h5')
-            # classes = model.predict(x)
-            
             classes = pmodel.predict(x)
             if np.argmax(classes)==0:
-                # engine.say('your x-ray looks fine')
-                with col2:
-                    col2.title(':green[NORMAL]\nYou are fine No need to Worry. 😊')
-                # text_to_speech('pneumonia is detected, better consult a doctor')
-                # os.system("say 'your x-ray looks fine'")
-                
+                col2.title(':green[NORMAL]\nYou are fine No need to Worry. 😊')
             else:
-                # engine.say('pneumonia is detected, better consult a doctor')
-                with col2:
-                    col2.title(':red[PNEUMONIA IS FOUND]\nGet Well Soon ✌🏻')
-                # text_to_speech('pneumonia is detected, better consult a doctor')
-                # os.system("say 'pneumonia is detected, better consult a doctor'")
-                
-            # engine.runAndWait()
-            # engine.stop()
-# >>>>>>> 63c6a23 (multi image feature added)
+                col2.title(':red[PNEUMONIA IS FOUND]\nGet Well Soon ✌🏻')
+
+imageArray.clear()
+betaColumnArray.clear()
