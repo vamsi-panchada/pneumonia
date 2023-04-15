@@ -99,7 +99,7 @@ def model():
     x = layers.Dense(2, activation='softmax', name='predictions')(x)
     model = Model(inputs=img_input, outputs=x, name = 'own_build_model')
     model.compile(optimizer = Adam(learning_rate = LEARN_RATE), loss = 'categorical_crossentropy', metrics = ['categorical_accuracy'])
-    print('hitting point 1')
+    # print('hitting point 1')
     try:
         model.load_weights('best_model.hdf5')
     except:
@@ -107,7 +107,7 @@ def model():
         destination = 'best_model.hdf5'
         getData.download_file_from_google_drive(file_id, destination)
         model.load_weights('best_model.hdf5')
-    print('hitting point 2')
+    # print('hitting point 2')
     return model
 
 pmodel = model()
